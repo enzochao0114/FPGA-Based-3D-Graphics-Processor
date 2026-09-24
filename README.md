@@ -2,9 +2,15 @@
 
 **Authors:** [Sin-Yuan Chao](https://github.com/enzochao0114) and [Min-Lun Tsou](https://github.com/Min-Lun-Tsou)
 
-A FPGA-based graph processor project for the **Terasic DE2-115** board, targeting the (**Cyclone IV E EP4CE115F29C7**) FPGA. It transforms 3D coordinates with CORDIC rotation and fixed-point perspective projection, draws wireframes with Bresenham's line algorithm, and displays them through ping-pong framebuffers on an **800 × 600 VGA output**.
+A FPGA-based graph processor project for the `Terasic DE2-115` board, targeting the (`Cyclone IV E EP4CE115F29C7`) FPGA. It transforms 3D coordinates with CORDIC rotation and fixed-point perspective projection, draws wireframes with Bresenham's line algorithm, and displays them through ping-pong framebuffers on an **800 × 600 VGA output**.
 
 Geometry comes from an embedded endpoint ROM or points received over UART and stored in external SRAM. The design also includes red/blue stereoscopic views, dashed lines, cycling colors, and brightness effects.
+
+
+### 🏆 Honorable Mention — Intel Track
+
+This project received an Honorable Mention at Taiwan’s National FPGA Competition, organized by the Ministry of Education.
+
 
 [GitHub repository](https://github.com/enzochao0114/FPGA-Based-3D-Graphics-Processor)
 
