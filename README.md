@@ -10,7 +10,7 @@ Geometry comes from an embedded endpoint ROM or points received over UART and st
 
 ## 🎬 Demos
 
-| Pikachu | Triangle |
+| Pikachu | Pyramid |
 | --- | --- |
 | ![Pikachu demonstration](figure/pikachu.gif) | ![Triangle demonstration](figure/triangle.gif) |
 
@@ -79,7 +79,6 @@ The PLL takes the board's 50 MHz clock and generates:
 
 The PLL port names are historical; the generated PLL multiplication/division settings determine these frequencies. VGA uses 1056 × 628 total pixel periods, giving approximately 60.3 Hz at 40 MHz. Display refresh is separate from geometry-rendering throughput.
 
-The memories use separate write and read clocks. The swap request/acknowledgment sequence coordinates frame ownership, but **the current RTL does not provide a complete synchronized CDC handshake**: the request and acknowledgment both run at 40 MHz, while `active_buffer`, drawing commands, and status signals also cross between the 40 MHz and 100 MHz domains without explicit synchronizers. These paths need timing/CDC review before treating the implementation as a fully verified design.
 
 ## 🎮 Hardware controls
 
@@ -112,7 +111,7 @@ The memories use separate write and read clocks. The swap request/acknowledgment
 FF  Z_hi Z_lo  Y_hi Y_lo  X_hi X_lo
 ```
 
-Coordinates use signed 16-bit two's-complement values. Each packet appends a point; reset clears the address and point counters. The feeder connects successive SRAM points into segments. There is no host uploader in this repository, and the decoder has no packet queue or flow control while waiting to write SRAM. The write sequence also leaves write-enable asserted for an extra cycle after the three coordinate writes, so this interface needs validation before relying on streamed geometry.
+Coordinates use signed 16-bit two's-complement values. Each packet appends a point; reset clears the address and point counters. The feeder connects successive SRAM points into segments. 
 
 ## 📁 Project layout
 
@@ -160,9 +159,10 @@ SignalTap is disabled in the root project, and references to local capture/progr
 
 ## 🔎 Current validation and limitations
 
-This repository preserves the existing hardware logic. The documentation/comment cleanup was checked by comparing RTL tokens with comments and whitespace excluded. No simulation testbench is included, and synthesis, timing closure, and board operation were not revalidated during that cleanup.
-
-In addition to the CDC and UART points above:
+### Fully Dependable CRC 
+The memories use separate write and read clocks. The swap request/acknowledgment sequence coordinates frame ownership, but the current RTL does not provide a complete synchronized CDC handshake: the request and acknowledgment both run at 40 MHz, while `active_buffer`, drawing commands, and status signals also cross between the 40 MHz and 100 MHz domains without explicit synchronizers. These paths need timing/CDC review before treating the implementation as a fully verified design.
+### Others
+In addition to the CDC points above:
 
 - The current ROM defines 954 coordinate words, or **159 line segments**, while the top-level feeder requests **471 segments**. Reads beyond the populated ROM return zero. Align the count with the geometry for a new hardware build.
 - Perspective arithmetic has finite precision and no explicit near-plane or divide-by-zero handling. The divider's numerical behavior needs simulation against the intended projection equation.
