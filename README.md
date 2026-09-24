@@ -2,7 +2,7 @@
 
 **Authors:** [Sin-Yuan Chao](https://github.com/enzochao0114) and [Min-Lun Tsou](https://github.com/Min-Lun-Tsou)
 
-A FPGA-based graph processor project for the **Terasic DE2-115** board, targeting the **Cyclone IV E EP4CE115F29C7** FPGA. It transforms 3D coordinates with CORDIC rotation and fixed-point perspective projection, draws wireframes with Bresenham's line algorithm, and displays them through ping-pong framebuffers on an **800 × 600 VGA output**.
+A FPGA-based graph processor project for the **Terasic DE2-115** board, targeting the (**Cyclone IV E EP4CE115F29C7**) FPGA. It transforms 3D coordinates with CORDIC rotation and fixed-point perspective projection, draws wireframes with Bresenham's line algorithm, and displays them through ping-pong framebuffers on an **800 × 600 VGA output**.
 
 Geometry comes from an embedded endpoint ROM or points received over UART and stored in external SRAM. The design also includes red/blue stereoscopic views, dashed lines, cycling colors, and brightness effects.
 
@@ -31,7 +31,7 @@ flowchart LR
     Front --> VGA[800 x 600 VGA]
 ```
 
-### CORDIC rotation and perspective projection
+### 🔄 CORDIC rotation and perspective projection
 
 `Polygon` fetches two endpoints and starts two `Transformer` instances, one per endpoint. Each transformer performs three sequential planar rotations in `Cordic_3d`:
 
@@ -55,19 +55,19 @@ The transformer defaults correspond to a camera distance of 1120 and box size of
 
 With stereoscopic mode enabled, the feeder transforms each line twice with `iGamma ± 520` angle units and selects blue or red for the corresponding view. The output is a wireframe; there is no triangle filling, depth buffer, or hidden-surface removal.
 
-### Bresenham's line algorithm
+### ✏️ Bresenham's line algorithm
 
 `modified_linedraw`, defined in `src/DE2_115/DE2_115.sv`, maintains integer X/Y coordinates and an error accumulator. It uses `dx = abs(x1 - x0)`, `dy = -abs(y1 - y0)`, and comparisons against twice the error to decide when to step each coordinate. Each pixel maps to framebuffer address `y * 800 + x`.
 
 Optional dash control gates pixel writes. The current implementation stops when it reaches the endpoint or exceeds the upper screen bounds; it does not implement general line clipping.
 
-### Ping-pong framebuffers
+### 🏓 Ping-pong framebuffers
 
 `framebuffer_top_double` instantiates two dual-clock memories, each holding **800 × 600 × 3 bits**. One bit per RGB channel provides eight base colors. Together, the buffers contain 2,880,000 bits of pixel storage before implementation overhead.
 
 The drawing controller clears and writes the inactive buffer while VGA reads the active buffer. After the last line, the animation controller requests a swap. The VGA-domain logic records the request, changes `active_buffer` on the rising edge of the active-low vertical-sync signal, and pulses `swap_complete`. The animation controller waits for this acknowledgment before starting the next frame.
 
-### PLL clocks and clock-domain crossings
+### ⏱️ PLL clocks and clock-domain crossings
 
 The PLL takes the board's 50 MHz clock and generates:
 
